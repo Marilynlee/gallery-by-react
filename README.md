@@ -3,7 +3,7 @@ one photo gallery project based on react!
 
 此项目根据慕课网Mater Liu老师的React实战-打造画廊应用课程完成，非常感谢老师的课程！但由于前端工具版本更新，项目的搭建和视频稍有不同。本项目涉及到的技术有React、webpack、sass、ES6等。
 
-# 项目的搭建
+# 项目环境搭建
 1、安装Yeoman：由于Yeoman本身基于nodeJS构建，所以首先本地安装nodeJS（https://nodejs.org/en/） 一键傻瓜式安装不多说了。安装Yeoman，使用<code>npm install -g yo</code>安装Yeoman。
 
 2、安装generator：在Yeoman官网（yeoman.io）Disgovering Generators中查找react-webpack,按要求安装generator：<code>npm install -g generator-react-webpack</code>
@@ -37,6 +37,14 @@ one photo gallery project based on react!
 
 
 3、启动项目：<code>npm start</code> or <code>npm run serve</code>
+
+# 项目开发前准备
+1、安装autoprefixer-loader：修改项目webpack配置以使css兼容各个浏览器，自动添加厂商前缀。运行<code>npm install autoprefixer-loader --save-dev</code>-save-dev使得包依赖添加至package.json文件依赖配置项
+
+2、同理，安装json-loader：运行<code>npm install json-loader --save-dev</code>。安装node-sass：运行<code>npm install node-sass --save-dev</code>。安装sass-loader：运行<code>npm install sass-loader --save-dev</code>。
+
+# 项目运行
+使用Git clone本项目代码之后，首先运行<code>npm install</code>安装node依赖的模块，在运行<code>npm start</code>即可！
 
 
 
