@@ -12,17 +12,29 @@ one photo gallery project based on react!
 1、登录自己的Github账号创建相应仓库，使用本地Git将代码clone下来，进入项目目录，运行<code>yo react-webpack</code>生成项目，按照CMD提示完成操作，这里我们选use sass、enable postcss。然后项目会自动安装，如果安装失败，自己运行<code>npm install</code>。由于前面enable postcss所以要运行<code>npm install autoprefixer</code>install PostCSS plugins。
 
 2、项目结构：
+
 --node_modules 项目编译所需node组件的包
+
 --src 项目源代码所在目录
+
 --test 项目测试代码所在目录
+
 --.editorconfig 统一不同编辑器代码规范
+
 --.babelrc 代码风格检测工具
+
 --.eslintrc 代码风格检测工具
+
 --.yo-rc Yeoman配置文件，记录项目信息
+
 --karma.conf.js karma测试框架的配置文件
+
 --package.json node项目的配置文件，声明项目所依赖的npm包
+
 --webpack.config.js webpack开发环境配置文件
+
 注意：由于react-webpack2.0已经抛弃了Grunt，所以本目录中没有Gruntfile.js文件和webpack.dist.config.js文件（webpack生产环境配置文件）
+
 
 3、启动项目：<code>npm start</code> or <code>npm run serve</code>
 
