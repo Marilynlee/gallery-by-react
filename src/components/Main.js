@@ -8,8 +8,8 @@ import ReactDOM from 'react-dom';
 let imageDatas = require('json!../data/imageDatas.json');
 
 //利用自动执行函数，将图片的文件名转换为图片的URL
-imageDatas = ((imageDataArr)=> {
-  for (var i = 0, j = imageDataArr.length; i < j; i++) {
+imageDatas = ((imageDataArr) => {
+  for (let i = 0, j = imageDataArr.length; i < j; i++) {
     let singleImageData = imageDataArr[i];
     singleImageData.imageURL = require('../images/' + singleImageData.fileName);
     imageDataArr[i] = singleImageData;
@@ -20,17 +20,24 @@ imageDatas = ((imageDataArr)=> {
 //封装函数去一个范围内的随机值
 
 /*
-*箭头函数后面不加大括号，默认只能有一行代码，默认return;箭头函数后面加大括号，默认没有return;
-*/
-var getRangedom = (low, high)=>Math.floor(Math.random() * (high - low) + low);
+ *箭头函数后面不加大括号，默认只能有一行代码，默认return;箭头函数后面加大括号，默认没有return;
+ */
+let getRangedom = (low, high) => Math.floor(Math.random() * (high - low) + low);
+let get30DegRandom = () =>(Math.random()>0.5?'':'-') + Math.ceil(Math.random() * 30);
 
 //单个图片组件
 class ImgFigure extends React.Component {
   render() {
-    var styleObj = {};
+    let styleObj = {};
     //如果props属性中指定了图片的位置，则使用此位置
     if (this.props.arrange.pos) {
       styleObj = this.props.arrange.pos;
+    }
+    //如果props属性中指定了图片旋转，则使用此位置
+    if (this.props.arrange.rotate) {
+      (['Moz', 'Ms', 'Webkit', '']).forEach((value) => {
+        styleObj[value + 'Transform'] = 'rotate(' + this.props.arrange.rotate + 'deg)';
+      })
     }
 
     return (
@@ -94,9 +101,10 @@ class GalleryByReactApp extends React.Component {
       topImgSpliceIndex = 0,
       imgsArrangeCenterArr = imgsArrangeArr.splice(centerIndex, 1);//拿到中心图片的初始位置
 
-    //居中centerIndex的图片
+    //居中centerIndex的图片,不需要旋转
     imgsArrangeCenterArr[0] = {
-      pos: centerPos
+      pos: centerPos,
+      rotate:0
     };
 
     //取出要放在上区域的图片信息
@@ -104,12 +112,13 @@ class GalleryByReactApp extends React.Component {
     imgsArrangeTopArr = imgsArrangeArr.splice(topImgSpliceIndex, topImgNum);
 
     //布局上区域的图片
-    imgsArrangeTopArr.forEach((value, index)=> {
+    imgsArrangeTopArr.forEach((value, index) => {
       imgsArrangeTopArr[index] = {
         pos: {
           top: getRangedom(vPosRangeTopY[0], vPosRangeTopY[1]),
           left: getRangedom(vPosRangeX[0], vPosRangeX[1])
-        }
+        },
+        rotate:get30DegRandom()
       };
     });
 
@@ -127,8 +136,9 @@ class GalleryByReactApp extends React.Component {
         pos: {
           top: getRangedom(hPosRangeY[0], hPosRangeY[1]),
           left: getRangedom(hPosRangeLORX[0], hPosRangeLORX[1])
-        }
-      };
+        },
+        rotate:get30DegRandom()
+      }
     }
 
     //如果上区域已经布置图片，将其插入图片数组中
@@ -136,7 +146,7 @@ class GalleryByReactApp extends React.Component {
       imgsArrangeArr.splice(topImgSpliceIndex, 0, imgsArrangeTopArr[0]);
     }
     //将中心位置的图片插入图片数组中
-    imgsArrangeArr.splice(centerIndex, 0, imgsArrangeCenterArr);
+    imgsArrangeArr.splice(centerIndex, 0, imgsArrangeCenterArr[0]);
 
     //设置state属性
     this.setState({
@@ -146,17 +156,18 @@ class GalleryByReactApp extends React.Component {
   }
 
 
-  /*getInitialStage(){
-   return{
-   imgsArrangeArr:[
-   {
-   pos: {
-   left: 0,
-   top: 0
-   }
-   }]
-   }
-   }*/
+  getInitialStage() {
+    return {
+      imgsArrangeArr: [
+        /*{
+          pos: {
+            left: 0,
+            top: 0
+          }
+        }*/
+        ]
+    }
+  }
 
   //hook回调函数初始化每张图片的区域范围
   componentDidMount() {
@@ -199,25 +210,24 @@ class GalleryByReactApp extends React.Component {
 
     //指定图片中第一个居中
     this.rearrange(0);
-
-
   }
 
 
   render() {
-    var controllerUnits = [],
+    let controllerUnits = [],
       imgFigures = [];
-    imageDatas.forEach((value, index)=> {
+    imageDatas.forEach((value, index) => {
       //初始化imgsArrangeArr
       if (!this.state.imgsArrangeArr[index]) {
         this.state.imgsArrangeArr[index] = {
           pos: {
             left: 0,
             top: 0
-          }
+          },
+          rotate:0
         }
       }
-      imgFigures.push(<ImgFigure data={value} key={index} ref={'imgFigure'+index}
+      imgFigures.push(<ImgFigure data={value} key={index} ref={'imgFigure' + index}
                                  arrange={this.state.imgsArrangeArr[index]}/>);
     });
 
