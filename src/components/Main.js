@@ -17,16 +17,23 @@ imageDatas = ((imageDataArr) => {
   return imageDataArr;
 })(imageDatas);
 
-//封装函数去一个范围内的随机值
-
 /*
- *箭头函数后面不加大括号，默认只能有一行代码，默认return;箭头函数后面加大括号，默认没有return;
+ *封装函数去一个范围内的随机值,箭头函数后面不加大括号，默认只能有一行代码，默认return;箭头函数后面加大括号，默认没有return;
  */
 let getRangedom = (low, high) => Math.floor(Math.random() * (high - low) + low);
 let get30DegRandom = () =>(Math.random()>0.5?'':'-') + Math.ceil(Math.random() * 30);
 
 //单个图片组件
 class ImgFigure extends React.Component {
+  /*
+  *imgFigure的点击处理函数
+  * */
+  handleClick(e){
+    this.props.arrange.isCenter?this.props.inverse():this.props.center();
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
   render() {
     let styleObj = {};
     //如果props属性中指定了图片的位置，则使用此位置
@@ -39,45 +46,73 @@ class ImgFigure extends React.Component {
         styleObj[value + 'Transform'] = 'rotate(' + this.props.arrange.rotate + 'deg)';
       })
     }
+    //如果props属性中是居中图片，设置z-index防止被覆盖
+    if (this.props.arrange.isCenter) {
+      styleObj.zIndex=11;
+    }
+
+    let imgFigureClassName='img-figure'+(this.props.arrange.isInverse?' is-inverse':'');
 
     return (
-      <figure className="img-figure" style={styleObj}>
+      <figure className={imgFigureClassName} style={styleObj} onClick={(e)=>this.handleClick(e)}>
         <img src={this.props.data.imageURL} alt={this.props.data.title}/>
         <figcaption>
           <h2 className="img-title">{this.props.data.title}</h2>
+          <div className="img-back" onClick={(e)=>this.handleClick(e)}>
+            <p>{this.props.data.desc}</p>
+          </div>
         </figcaption>
       </figure>
     );
   }
 }
 
-
 class GalleryByReactApp extends React.Component {
   constructor(props) {
     super(props);
     //各个区域的取值范围
-    this.Constant = {
-      //中心位置
+    this.Constant = {//中心位置
       centerPos: {
         left: 0,
         top: 0
       },
-      //水平方向范围
-      hPosRange: {
+      hPosRange: {//水平方向范围
         leftSecX: [0, 0],
         rightSecX: [0, 0],
         y: [0, 0]
       },
-      //  垂直方向范围
-      vPosRange: {
+      vPosRange: { //  垂直方向范围
         X: [0, 0],
         topY: [0, 0]
       }
-
     };
     this.state = {
       imgsArrangeArr: []
     };
+  }
+  /*
+  * 翻转图片：使用闭包函数，return一个真正待被执行的函数
+  * @param index输入当前被执行inverse操作的图片对应的图片的index值
+  * return {Function}
+  */
+  inverse(index) {
+    return () => {
+      let imgsArrangeArr = this.state.imgsArrangeArr;
+      imgsArrangeArr[index].isInverse = !imgsArrangeArr[index].isInverse;
+      this.setState({
+        imgsArrangeArr
+      });
+    }
+  }
+  /*
+   * 利用rearrange函数，居中对应index的图片
+   * @param index需要被居中图片的index值
+   * @return {function}
+   * */
+  center(index){
+    return ()=>{
+      this.rearrange(index)
+    }
   }
 
   /*
@@ -104,7 +139,8 @@ class GalleryByReactApp extends React.Component {
     //居中centerIndex的图片,不需要旋转
     imgsArrangeCenterArr[0] = {
       pos: centerPos,
-      rotate:0
+      rotate:0,
+      isCenter:true
     };
 
     //取出要放在上区域的图片信息
@@ -118,7 +154,8 @@ class GalleryByReactApp extends React.Component {
           top: getRangedom(vPosRangeTopY[0], vPosRangeTopY[1]),
           left: getRangedom(vPosRangeX[0], vPosRangeX[1])
         },
-        rotate:get30DegRandom()
+        rotate:get30DegRandom(),
+        isCenter:false
       };
     });
 
@@ -137,7 +174,8 @@ class GalleryByReactApp extends React.Component {
           top: getRangedom(hPosRangeY[0], hPosRangeY[1]),
           left: getRangedom(hPosRangeLORX[0], hPosRangeLORX[1])
         },
-        rotate:get30DegRandom()
+        rotate:get30DegRandom(),
+        isCenter:false
       }
     }
 
@@ -150,24 +188,11 @@ class GalleryByReactApp extends React.Component {
 
     //设置state属性
     this.setState({
-      imgsArrangeArr: imgsArrangeArr
+      imgsArrangeArr
     });
 
   }
 
-
-  getInitialStage() {
-    return {
-      imgsArrangeArr: [
-        /*{
-          pos: {
-            left: 0,
-            top: 0
-          }
-        }*/
-        ]
-    }
-  }
 
   //hook回调函数初始化每张图片的区域范围
   componentDidMount() {
@@ -212,7 +237,6 @@ class GalleryByReactApp extends React.Component {
     this.rearrange(0);
   }
 
-
   render() {
     let controllerUnits = [],
       imgFigures = [];
@@ -224,17 +248,20 @@ class GalleryByReactApp extends React.Component {
             left: 0,
             top: 0
           },
-          rotate:0
+          rotate:0,
+          isInverse:false,//是否翻转
+          isCenter:false//是否居中
         }
       }
       imgFigures.push(<ImgFigure data={value} key={index} ref={'imgFigure' + index}
-                                 arrange={this.state.imgsArrangeArr[index]}/>);
+                                 arrange={this.state.imgsArrangeArr[index]}
+                                 inverse={this.inverse(index)} center={this.center(index)}/>);
     });
 
     return (
       <section className="stage" ref="stage">
-        <section className="img-sec">;{imgFigures};</section>
-        <nav className="controller-nav">;{controllerUnits};</nav>
+        <section className="img-sec">{imgFigures}</section>
+        <nav className="controller-nav">{controllerUnits}</nav>
       </section>
     );
   }
