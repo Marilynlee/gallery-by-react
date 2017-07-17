@@ -25,6 +25,9 @@ let get30DegRandom = () =>(Math.random()>0.5?'':'-') + Math.ceil(Math.random() *
 
 //单个图片组件
 class ImgFigure extends React.Component {
+  constructor(props){
+    super(props);
+  }
   /*
   *imgFigure的点击处理函数
   * */
@@ -63,6 +66,29 @@ class ImgFigure extends React.Component {
           </div>
         </figcaption>
       </figure>
+    );
+  }
+}
+
+//图片控制组件
+class ControllerUnit extends React.Component{
+  constructor(props){
+    super(props);
+  }
+  /*
+   *ControllerUnit的点击处理函数
+   * */
+  handleClick(e){
+    // 如果点击的是当前正在选中态的按钮，则翻转图片，否则将对应的图片居中
+    this.props.arrange.isCenter?this.props.inverse():this.props.center();
+    e.stopPropagation();
+    e.preventDefault();
+  }
+  render(){
+    let controllerUnitClassName=this.props.arrange.isCenter?'controller-unit is-center':'controller-unit';
+    this.props.arrange.isInverse?controllerUnitClassName+=' is-inverse':'';
+    return(
+      <span className={controllerUnitClassName} onClick={(e)=>this.handleClick(e)}>{this.props.indexValue+1}</span>
     );
   }
 }
@@ -193,7 +219,6 @@ class GalleryByReactApp extends React.Component {
 
   }
 
-
   //hook回调函数初始化每张图片的区域范围
   componentDidMount() {
     //  拿到舞台大小
@@ -248,14 +273,17 @@ class GalleryByReactApp extends React.Component {
             left: 0,
             top: 0
           },
-          rotate:0,
-          isInverse:false,//是否翻转
-          isCenter:false//是否居中
+          rotate: 0,
+          isInverse: false,//是否翻转
+          isCenter: false//是否居中
         }
       }
       imgFigures.push(<ImgFigure data={value} key={index} ref={'imgFigure' + index}
                                  arrange={this.state.imgsArrangeArr[index]}
                                  inverse={this.inverse(index)} center={this.center(index)}/>);
+      controllerUnits.push(<ControllerUnit key={index} indexValue={index}
+                                           arrange={this.state.imgsArrangeArr[index]}
+                                           inverse={this.inverse(index)} center={this.center(index)}/>);
     });
 
     return (
