@@ -34,5 +34,8 @@ one photo gallery project based on react!
 # 项目运行
 使用Git clone本项目代码之后，首先运行<code>npm install</code>安装node依赖的模块，在运行<code>npm start</code>即可！
 
+# node-sass报错解决办法
+如果启动<code>npm start</code>时候，<code>node-sass</code>依赖包报错Error: ENOENT: no such file or directory, scandir '\node_modules\.npminstall\node-sass\3.7.0\node-sass\vendor'。先运行<code>npm rebuild node-sass</code>在启动项目
+
 
 
