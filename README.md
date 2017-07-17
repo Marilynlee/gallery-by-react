@@ -37,5 +37,5 @@ one photo gallery project based on react!
 # node-sass报错解决办法
 如果启动<code>npm start</code>时候，<code>node-sass</code>依赖包报错Error: ENOENT: no such file or directory, scandir '\node_modules\.npminstall\node-sass\3.7.0\node-sass\vendor'。先运行<code>npm rebuild node-sass</code>在启动项目
 
-点此https://marilynlee.github.io/gallery-by-react/查看项目在线地址
+点此https://marilynlee.github.io/gallery-by-react/ 查看项目在线地址
 
